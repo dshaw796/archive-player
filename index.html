@@ -1,287 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Archive Player</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archive Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+body {
+  margin:0;
+  font-family:'Press Start 2P', monospace;
+  color:#e8f8e8;
+  background:url('https://opengameart.org/sites/default/files/WaterTileOcean.gif');
+  background-size:128px 128px;
+  image-rendering:pixelated;
+}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Press Start 2P', monospace;
-      color: #e8f8e8;
-      background: url('https://opengameart.org/sites/default/files/WaterTileOcean.gif');
-      background-size: 128px 128px;
-      image-rendering: pixelated;
-    }
+.overlay {
+  background:rgba(0,20,30,0.75);
+  min-height:100vh;
+  padding:15px;
+}
 
-    .overlay {
-      background: rgba(0, 20, 30, 0.75);
-      min-height: 100vh;
-      padding: 15px;
-    }
+.container { max-width:520px; margin:0 auto; }
 
-    .container { max-width: 520px; margin: 0 auto; }
+/* ✨ TITLE PANEL (CLEANER RETRO) */
+.header {
+  position: relative;
+  padding: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+  background: rgba(10, 40, 30, 0.6);
+  border: 4px solid #a8e0a8;
+  box-shadow:
+    0 0 0 4px #0b2e13,
+    0 0 10px rgba(168,224,168,0.4);
+}
 
-    .header {
-      background: #081c15;
-      border: 4px solid #a8e0a8;
-      padding: 10px;
-      text-align: center;
-      margin-bottom: 12px;
-    }
+/* pixel corner accents */
+.header::before,
+.header::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #a8e0a8;
+}
 
-    h1 {
-      font-size: 12px;
-      margin: 0;
-      position: relative;
-      display: inline-block;
-      text-shadow: 0 0 4px #a8e0a8;
-    }
+.header::before { top: -6px; left: -6px; }
+.header::after { bottom: -6px; right: -6px; }
 
-    /* vertical shine */
-    h1::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -40%;
-      width: 20%;
-      height: 100%;
-      background: rgba(255,255,255,0.6);
-      opacity: 0;
-      animation: shine 6s infinite;
-    }
+h1 {
+  font-size: 12px;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  text-shadow: 0 0 4px #a8e0a8;
+}
 
-    @keyframes shine {
-      0%, 80%, 100% { opacity: 0; left: -40%; }
-      85% { opacity: 1; }
-      90% { left: 120%; opacity: 0; }
-    }
+/* vertical shine */
+h1::after {
+  content:'';
+  position:absolute;
+  top:0;
+  left:-40%;
+  width:20%;
+  height:100%;
+  background:rgba(255,255,255,0.7);
+  opacity:0;
+  animation:shine 6s infinite;
+}
 
-    /* twinkle pixels */
-    .twinkle {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: #fff;
-      animation: twinkle 2s infinite alternate;
-    }
+@keyframes shine {
+  0%,80%,100% { opacity:0; left:-40%; }
+  85% { opacity:1; }
+  90% { left:120%; opacity:0; }
+}
 
-    @keyframes twinkle {
-      from { opacity: 0.2; }
-      to { opacity: 1; }
-    }
 
-    .panel {
-      background: #102820;
-      border: 4px solid #a8e0a8;
-      padding: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 0 0 4px #0b2e13;
-    }
 
-    .player {
-      background: #081c15;
-      border: 3px solid #a8e0a8;
-      padding: 10px;
-      font-size: 8px;
-      margin-bottom: 12px;
-    }
+@keyframes twinkle {
+  from { opacity:0.2; }
+  to { opacity:1; }
+}
 
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
+.panel {
+  background:#102820;
+  border:4px solid #a8e0a8;
+  padding:12px;
+  margin-bottom:12px;
+  box-shadow:0 0 0 4px #0b2e13;
+}
 
-    .btn {
-      border: 3px solid #a8e0a8;
-      padding: 6px 10px;
-      cursor: pointer;
-      background: #183828;
-    }
+.player {
+  background:#081c15;
+  border:3px solid #a8e0a8;
+  padding:10px;
+  font-size:8px;
+  margin-bottom:12px;
+}
 
-    .btn:active { background: #2e5a3f; }
+.controls { display:flex; justify-content:space-between; margin-top:10px; }
 
-    .cursor::after {
-      content: "_";
-      animation: blink 1s infinite;
-    }
+.btn {
+  border:3px solid #a8e0a8;
+  padding:6px 10px;
+  cursor:pointer;
+  background:#183828;
+}
 
-    @keyframes blink { 50% { opacity: 0; } }
+.btn:active { background:#2e5a3f; }
 
-    .info {
-      border: 3px solid #a8e0a8;
-      padding: 10px;
-      font-size: 7px;
-      background: #102820;
-      min-height: 60px;
-      margin-bottom: 12px;
-    }
+.cursor::after {
+  content:"_";
+  animation:blink 1s infinite;
+}
 
-    .discography {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
+@keyframes blink { 50% { opacity:0; } }
 
-    /* cartridge style */
-    .album {
-      background: #cfd8cf;
-      border: 3px solid #333;
-      padding: 6px;
-      cursor: pointer;
-      position: relative;
-    }
+.info {
+  border:3px solid #a8e0a8;
+  padding:10px;
+  font-size:7px;
+  background:#102820;
+  min-height:60px;
+  margin-bottom:12px;
+}
 
-    .album::before {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 10px;
-      right: 10px;
-      height: 6px;
-      background: #999;
-      border: 2px solid #333;
-      border-bottom: none;
-    }
+.discography {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  position:relative;
+}
 
-    .album.active {
-      outline: 2px solid #e8f8e8;
-    }
+/* 🎮 CARTRIDGE */
+.album {
+  background:#cfd8cf;
+  border:3px solid #333;
+  padding:6px;
+  cursor:pointer;
+  position:relative;
+  box-shadow:inset 0 -3px #888, 2px 2px #000;
+  transition:transform 0.1s;
+}
 
-    .album img {
-      width: 100%;
-      image-rendering: pixelated;
-      border: 2px solid #333;
-    }
+.album:active {
+  transform:scale(0.92);
+}
 
-    .album p {
-      font-size: 6px;
-      margin-top: 4px;
-      text-align: center;
-      color: #000;
-    }
+.album::before {
+  content:'';
+  position:absolute;
+  top:-6px;
+  left:10px;
+  right:10px;
+  height:6px;
+  background:#999;
+  border:2px solid #333;
+  border-bottom:none;
+}
 
-    .footer {
-      text-align: center;
-      font-size: 6px;
-      margin-top: 10px;
-      opacity: 0.7;
-    }
+.album::after {
+  content:'';
+  position:absolute;
+  bottom:4px;
+  left:50%;
+  transform:translateX(-50%);
+  width:60%;
+  height:3px;
+  background:#888;
+}
 
-    @media (max-width: 500px) {
-      .discography { grid-template-columns: repeat(2, 1fr); }
-    }
-  </style>
+.album img {
+  width:100%;
+  image-rendering:pixelated;
+  border:2px solid #333;
+}
+
+.album p {
+  font-size:6px;
+  margin-top:4px;
+  text-align:center;
+  color:#000;
+}
+
+/* 🌈 CURSOR (SMALL + HARD EDGE) */
+.cursor-arrow {
+  position:absolute;
+  width:0;
+  height:0;
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  border-left:6px solid #fff;
+  animation:float 0.5s infinite alternate;
+  pointer-events:none;
+}
+
+@keyframes float {
+  from { transform:translateY(-1px); }
+  to { transform:translateY(1px); }
+}
+
+.footer {
+  text-align:center;
+  font-size:6px;
+  margin-top:10px;
+  opacity:0.7;
+}
+
+@media (max-width:500px) {
+  .discography { grid-template-columns:repeat(2,1fr); }
+}
+</style>
 </head>
 <body>
 
 <div class="overlay">
-  <div class="container">
+<div class="container">
 
-    <div class="header">
-      <h1>ARCHIVE PLAYER</h1>
-      <div class="twinkle" style="top:4px; left:10px"></div>
-      <div class="twinkle" style="top:8px; right:20px"></div>
-    </div>
+<div class="header" id="header"></div>
 
-    <div class="panel">
+<div class="panel">
 
-      <div class="player">
-        <div id="screen" class="cursor">READY</div>
-        <div class="controls">
-          <div class="btn" onclick="play()">PLAY</div>
-          <div class="btn" onclick="stop()">STOP</div>
-        </div>
-      </div>
+<div class="player">
+<div id="screen" class="cursor">READY</div>
+<div class="controls">
+<div class="btn" onclick="play()">PLAY</div>
+<div class="btn" onclick="stop()">STOP</div>
+</div>
+</div>
 
-      <div class="info" id="info"></div>
+<div class="info" id="info"></div>
 
-      <div class="discography" id="discography"></div>
+<div class="discography" id="discography">
+<div class="cursor-arrow" id="cursor"></div>
+</div>
 
-    </div>
+</div>
 
-    <div class="footer">SYSTEM ONLINE</div>
+<div class="footer">SYSTEM ONLINE</div>
 
-  </div>
+</div>
 </div>
 
 <script>
-  const albums = [
-    { title: "ALBUM 01", audio: "audio/track1.mp3", info: "🎧 PRODUCER  🎚 ENGINEER  ✍ WRITER", art: "images/cad.png" },
-    { title: "ALBUM 02", audio: "audio/empathy2.2.mp3", info: "🎧 PRODUCER  ✍ WRITER", art: "images/wlog.png" },
-    { title: "ALBUM 03", audio: "audio/track3.mp3", info: "🎧 PRODUCER", art: "images/album3.png" },
-    { title: "ALBUM 04", audio: "audio/track4.mp3", info: "🎚 ENGINEER", art: "images/album4.png" },
-    { title: "ALBUM 05", audio: "audio/track5.mp3", info: "✍ WRITER", art: "images/album5.png" },
-    { title: "ALBUM 06", audio: "audio/track6.mp3", info: "🎧 PRODUCER", art: "images/album6.png" },
-    { title: "ALBUM 07", audio: "audio/track7.mp3", info: "🎚 ENGINEER", art: "images/album7.png" },
-    { title: "ALBUM 08", audio: "audio/track8.mp3", info: "🎧 PRODUCER  ✍ WRITER", art: "images/album8.png" }
-  ];
+const header = document.getElementById("header");
+header.innerHTML = "<h1>ARCHIVE PLAYER</h1>";
 
-  const discographyEl = document.getElementById("discography");
-  let current = null;
-  let audio = new Audio();
-  audio.preload = "auto";
 
-  albums.forEach(a => {
-    const preloadAudio = new Audio();
-    preloadAudio.src = a.audio;
+
+const albums=[
+{ title:"ALBUM 01", audio:"audio/empathy2.2.mp3", info:"🎧 PRODUCER 🎚 ENGINEER ✍ WRITER", art:"images/wlog.png"},
+{ title:"ALBUM 02", audio:"audio/track2.mp3", info:"🎧 PRODUCER ✍ WRITER", art:"images/cad.png"},
+{ title:"ALBUM 03", audio:"audio/track3.mp3", info:"🎧 PRODUCER", art:"images/album3.png"},
+{ title:"ALBUM 04", audio:"audio/track4.mp3", info:"🎚 ENGINEER", art:"images/album4.png"},
+{ title:"ALBUM 05", audio:"audio/track5.mp3", info:"✍ WRITER", art:"images/album5.png"},
+{ title:"ALBUM 06", audio:"audio/track6.mp3", info:"🎧 PRODUCER", art:"images/album6.png"},
+{ title:"ALBUM 07", audio:"audio/track7.mp3", info:"🎚 ENGINEER", art:"images/album7.png"},
+{ title:"ALBUM 08", audio:"audio/track8.mp3", info:"🎧 PRODUCER ✍ WRITER", art:"images/album8.png"}
+];
+
+const discographyEl=document.getElementById("discography");
+const cursorEl=document.getElementById("cursor");
+
+let current=null;
+let audio=new Audio();
+audio.preload="auto";
+
+function typeText(text,el){
+  el.innerText="";
+  let i=0;
+  const interval=setInterval(()=>{
+    el.innerText+=text[i];
+    i++;
+    if(i>=text.length) clearInterval(interval);
+  },20);
+}
+
+function renderAlbums(){
+  albums.forEach((album,index)=>{
+    const div=document.createElement("div");
+    div.className="album";
+    div.innerHTML=`<img src="${album.art}"><p>${album.title}</p>`;
+    div.onclick=()=>selectAlbum(index,div);
+    div.onmouseenter=()=>moveCursor(div);
+    discographyEl.appendChild(div);
   });
+}
 
-  function typeText(text, el) {
-    el.innerText = "";
-    let i = 0;
-    const interval = setInterval(() => {
-      el.innerText += text[i];
-      i++;
-      if (i >= text.length) clearInterval(interval);
-    }, 20);
-  }
+function moveCursor(el){
+  const rect=el.getBoundingClientRect();
+  const parentRect=discographyEl.getBoundingClientRect();
+  cursorEl.style.left=(rect.left-parentRect.left-10)+'px';
+  cursorEl.style.top=(rect.top-parentRect.top+rect.height/2-4)+'px';
+}
 
-  function renderAlbums() {
-    albums.forEach((album, index) => {
-      const div = document.createElement("div");
-      div.className = "album";
-      div.innerHTML = `
-        <img src="${album.art}">
-        <p>${album.title}</p>
-      `;
-      div.onclick = () => selectAlbum(index, div);
-      discographyEl.appendChild(div);
-    });
-  }
+function selectAlbum(index,el){
+  current=albums[index];
+  moveCursor(el);
+  typeText("> LOADING...",document.getElementById("screen"));
+  setTimeout(()=>{
+    audio.src=current.audio;
+    typeText("> LOADED "+current.title,document.getElementById("screen"));
+    typeText("> "+current.info,document.getElementById("info"));
+  },400);
+}
 
-  function selectAlbum(index, el) {
-    document.querySelectorAll('.album').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
+function play(){
+  if(!current) return;
+  audio.play();
+  typeText("> PLAYING",document.getElementById("screen"));
+}
 
-    current = albums[index];
+function stop(){
+  audio.pause();
+  audio.currentTime=0;
+  typeText("> STOPPED",document.getElementById("screen"));
+}
 
-    typeText("> LOADING...", document.getElementById("screen"));
-
-    setTimeout(() => {
-      audio.src = current.audio;
-      typeText("> LOADED " + current.title, document.getElementById("screen"));
-      typeText("> " + current.info, document.getElementById("info"));
-    }, 400);
-  }
-
-  function play() {
-    if (!current) return;
-    audio.play();
-    typeText("> PLAYING", document.getElementById("screen"));
-  }
-
-  function stop() {
-    audio.pause();
-    audio.currentTime = 0;
-    typeText("> STOPPED", document.getElementById("screen"));
-  }
-
-  renderAlbums();
+renderAlbums();
 </script>
 
 </body>
